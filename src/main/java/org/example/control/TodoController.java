@@ -10,6 +10,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @AllArgsConstructor
@@ -31,31 +32,38 @@ public class TodoController {
             request.setCompleted(false);
         TodoEntity result = this.service.add(request);
         return ResponseEntity.ok(new TodoResponse(result));
-        return null;
     }
     @GetMapping
-    public ResponseEntity<TodoResponse> readOne(){
+    public ResponseEntity<TodoResponse> readOne(@PathVariable Long id){
         System.out.println("READ ONE");
-        return null;
+        TodoEntity result= this.service.searchById(id);
+
+        return ResponseEntity.ok(new TodoResponse(result));
     }
     @GetMapping
     public ResponseEntity<List<TodoResponse>> readAll(){
         System.out.println("READ ALL");
-        return null;
+        List<TodoEntity> list = this.service.searchAll();
+        List<TodoResponse> responses = list.stream().map(TodoResponse::new ).collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
     @PatchMapping
-    public ResponseEntity<TodoResponse> update(){
+    public ResponseEntity<TodoResponse> update(@PathVariable Long id, @RequestBody TodoRequest request){
         System.out.println("UPDATE");
-        return null;
+        TodoEntity result = this.service.updateById(id, request);
+
+        return ResponseEntity.ok(new TodoResponse(result));
     }
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteOne(){
+    public ResponseEntity<?> deleteOne(@PathVariable Long id){
         System.out.println("DELETE");
-        return null;
+        this.service.deleteByID(id);
+        return ResponseEntity.ok().build();
     }
     @DeleteMapping
     public ResponseEntity<?> deleteAll(){
         System.out.println("DELETE ALL");
-        return null;
+        this.service.deleteAll();
+        return ResponseEntity.ok().build();
     }
 }
